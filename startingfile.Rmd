@@ -1,0 +1,56 @@
+---
+title: "Dungeons&Data"
+author: "Tyler Lawrence"
+date: "2023-11-01"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(tidyverse)
+billionares <- read.csv("Billionaires Statistics Dataset.csv")
+usBills <- billionares   %>% filter(country == "United States" & rank <= 500) %>% mutate(usRank = as.integer(rank(-finalWorth))) %>% select(usRank, finalWorth, category, personName, country, source, status, gender, birthYear)
+
+print(usBills)
+
+```
+```{r}
+usBills %>% group_by(gender) %>% summarize(mean(finalWorth))
+
+```
+
+```{r}
+ggplot(usBills, aes(fill = gender, x = usRank)) + geom_density(alpha = .5)
+
+```
+
+```{r}
+ggplot(usBills, aes(gender, fill = gender)) + geom_bar()
+
+```
+
+```{r}
+ggplot(usBills, aes(birthYear, fill = gender)) + geom_histogram()
+
+
+```
+
+```{r}
+ggplot(usBills, aes(usRank, birthYear, color = gender)) + geom_point()
+
+
+```
+
+```{r}
+usBills %>% group_by(category) %>% summarize(mean(finalWorth)) %>% ggplot(aes(category, `mean(finalWorth)`)) + geom_col() + coord_flip() #reorder these + make titles
+
+```
+
+
+```{r}
+ggplot(usBills, aes(finalWorth, fill = category)) + geom_histogram(bins = 30)
+
+```
