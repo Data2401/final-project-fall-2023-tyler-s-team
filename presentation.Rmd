@@ -1,0 +1,69 @@
+---
+title: "Untitled"
+author: "Tyler Lawrence"
+date: "2023-11-27"
+output: slidy_presentation
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(tidyverse)
+library(ggplot2)
+```
+
+## Billionaire Data:
+
+This is today I will be using some billionaire data from this year I found on Kaggle, at <https://www.kaggle.com/datasets/nelgiriyewithana/billionaires-statistics-dataset>.
+
+## Questions to answer:
+- What is the difference between the genders when it comes to wealth?
+- How does wealth scale with age?
+- Which industries make the most money?
+
+## Some code for you
+
+billionares <- read.csv("Billionaires Statistics Dataset.csv")
+usBills <- billionares %>% filter(country == "United States" & rank <= 500) %>% mutate(usRank = as.integer(rank(-finalWorth))) %>% select(usRank, finalWorth, category, personName, country, source, status, gender, birthYear)
+
+## Let's start with a comparison of the representation of genders.
+```{r, echo=FALSE}
+billionares <- read.csv("Billionaires Statistics Dataset.csv")
+usBills <- billionares %>% filter(country == "United States" & rank <= 500) %>% mutate(usRank = as.integer(rank(-finalWorth))) %>% select(usRank, finalWorth, category, personName, country, source, status, gender, birthYear)
+ggplot(usBills, aes(gender, fill = gender)) + geom_bar()
+
+```
+## Not looking good!
+As you can see, the distribution of wealth between the sexes is a little uneven!
+
+But that's just the amount of people, how much does the average female billionaire make compared to the average male billionaire?
+
+## Mean of wealth of the males and females:
+```{r}
+usBills %>% group_by(gender) %>% summarize(mean(finalWorth))
+```
+
+Not as bad as it could be, but not very good either.
+
+## Here's the density by rank of the sexes
+```{r}
+ggplot(usBills, aes(fill = gender, x = usRank)) + geom_density(alpha = .5)
+
+```
+
+## Now that I've shown the sexism in the American Capitalist system, how about we show how age affects wealth?
+```{r}
+ggplot(usBills, aes(birthYear)) + geom_histogram()
+
+```
+
+That's not great either! 
+
+## Now how do certain industries compare to others?
+```{r}
+usBills %>% group_by(category) %>% summarize(mean(finalWorth)) %>% ggplot(aes(category, `mean(finalWorth)`)) + geom_col() + coord_flip()
+
+```
+
+As we can see, the automotive industry dominates against all other industries, however, this might be mostly because of Elon Musk, who is listed as only automotive.
+
+## Thank you for listening!
